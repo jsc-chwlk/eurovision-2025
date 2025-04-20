@@ -63,7 +63,7 @@ const SongList = () => {
       return 0;
     });
     setSortedSongs(sorted); // Setze die sortierte Liste
-  }, [ratings]); // Die Liste wird immer dann neu sortiert, wenn die Bewertungen sich ändern
+  }, [calculateAverage, ratings]); // Die Liste wird immer dann neu sortiert, wenn die Bewertungen sich ändern
 
   // Handle Bewertung ändern
   const handleRatingChange = (songId, category, value) => {
