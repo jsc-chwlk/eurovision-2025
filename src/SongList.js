@@ -27,13 +27,7 @@ const SongList = () => {
     localStorage.setItem('esc_sorted_songs', JSON.stringify(sortedSongs)); // Speichern der sortierten Liste
   }, [ratings, sortedSongs]);
 
-  // Überprüfen, ob alle Kategorien für einen Song bewertet wurden
-  const hasAllRatings = (songId) => {
-    const songRatings = ratings[songId];
-    return categories.every((category) => songRatings && songRatings[category]);
-  };
-
-  // Berechne die Durchschnittsbewertung für einen Song
+  // Funktion zur Berechnung der Durchschnittsbewertung eines Songs
   const calculateAverage = (songId) => {
     const songRatings = ratings[songId];
     if (!songRatings || !hasAllRatings(songId)) return '-'; // Berechne nur, wenn alle Kategorien bewertet wurden
@@ -46,6 +40,12 @@ const SongList = () => {
     const sum = validValues.reduce((acc, curr) => acc + curr, 0);
     const average = sum / validValues.length;
     return average.toFixed(1);
+  };
+
+  // Überprüfen, ob alle Kategorien für einen Song bewertet wurden
+  const hasAllRatings = (songId) => {
+    const songRatings = ratings[songId];
+    return categories.every((category) => songRatings && songRatings[category]);
   };
 
   // Sortiere die Songs nach ihrer Durchschnittsbewertung, nur wenn alle Bewertungen vorliegen
