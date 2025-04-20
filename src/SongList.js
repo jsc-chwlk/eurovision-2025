@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import songs from './songs'; // Deine Song-Datenquelle
 
 const categories = ['Artist', 'Outfit', 'Bühne', 'Ohrwurm', 'Song'];
@@ -27,8 +27,8 @@ const SongList = () => {
     localStorage.setItem('esc_sorted_songs', JSON.stringify(sortedSongs)); // Speichern der sortierten Liste
   }, [ratings, sortedSongs]);
 
-  // Funktion zur Berechnung der Durchschnittsbewertung eines Songs
-  const calculateAverage = (songId) => {
+  // Berechnet die Durchschnittsbewertung eines Songs
+  const calculateAverage = useCallback((songId) => {
     const songRatings = ratings[songId];
     if (!songRatings || !hasAllRatings(songId)) return '-'; // Berechne nur, wenn alle Kategorien bewertet wurden
 
@@ -40,7 +40,7 @@ const SongList = () => {
     const sum = validValues.reduce((acc, curr) => acc + curr, 0);
     const average = sum / validValues.length;
     return average.toFixed(1);
-  };
+  }, [ratings]); // Die Funktion wird nur neu erstellt, wenn sich 'ratings' ändern
 
   // Überprüfen, ob alle Kategorien für einen Song bewertet wurden
   const hasAllRatings = (songId) => {
@@ -63,7 +63,7 @@ const SongList = () => {
       return 0;
     });
     setSortedSongs(sorted); // Setze die sortierte Liste
-  }, [calculateAverage, ratings]); // Die Liste wird immer dann neu sortiert, wenn die Bewertungen sich ändern
+  }, [ratings, calculateAverage]); // Die Liste wird immer dann neu sortiert, wenn die Bewertungen oder die Durchschnittsfunktion sich ändern
 
   // Handle Bewertung ändern
   const handleRatingChange = (songId, category, value) => {
