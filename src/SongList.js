@@ -40,7 +40,7 @@ const SongList = () => {
     const sum = validValues.reduce((acc, curr) => acc + curr, 0);
     const average = sum / validValues.length;
     return average.toFixed(1);
-  }, [ratings]); // Die Funktion wird nur neu erstellt, wenn sich 'ratings' ändern
+  }, [ratings, hasAllRatings]); // Die Funktion wird nur neu erstellt, wenn sich 'ratings' ändern
 
   // Überprüfen, ob alle Kategorien für einen Song bewertet wurden
   const hasAllRatings = (songId) => {
