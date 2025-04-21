@@ -1,66 +1,75 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import songs from './songs';
 
 const categories = ['Artist', 'Outfit', 'Bühne', 'Ohrwurm', 'Song'];
 const emojiTags = ['❤️', '🔥'];
 
 const SongList = () => {
-  const [ratings, setRatings] = useState({});
-  const [sortedSongs, setSortedSongs] = useState(songs);
+  const [ratings, setRatings] = useState(() => {
+    // Laden der Bewertungen aus dem localStorage, wenn vorhanden
+    const storedRatings = localStorage.getItem('esc_ratings');
+    return storedRatings ? JSON.parse(storedRatings) : {};
+  });
+
+  const [sortedSongs, setSortedSongs] = useState(() => {
+    // Laden der sortierten Songs aus dem localStorage, wenn vorhanden
+    const storedSortedSongs = localStorage.getItem('esc_sorted_songs');
+    return storedSortedSongs ? JSON.parse(storedSortedSongs) : songs;
+  });
+
   const [showLegend, setShowLegend] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('esc_theme') || 'light');
 
-useEffect(() => {
-  document.body.setAttribute('data-theme', theme);
-  localStorage.setItem('esc_theme', theme);
-}, [theme]);
-
-const toggleTheme = () => {
-  setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
-};
-
   useEffect(() => {
-    const storedRatings = localStorage.getItem('esc_ratings');
-    const storedSortedSongs = localStorage.getItem('esc_sorted_songs');
+    // Beim Theme-Wechsel das Theme im localStorage speichern
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('esc_theme', theme);
+  }, [theme]);
 
-    if (storedRatings) setRatings(JSON.parse(storedRatings));
-    if (storedSortedSongs) setSortedSongs(JSON.parse(storedSortedSongs));
-  }, []);
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
 
+  // Speichern der Bewertungen und der sortierten Songs im localStorage
   useEffect(() => {
     localStorage.setItem('esc_ratings', JSON.stringify(ratings));
-    localStorage.setItem('esc_sorted_songs', JSON.stringify(sortedSongs));
-  }, [ratings, sortedSongs]);
-
-  const hasAllRatings = useCallback((songId) => {
-    const songRatings = ratings[songId];
-    return categories.every((category) => songRatings && songRatings[category]);
   }, [ratings]);
 
-  const calculateAverage = useCallback((songId) => {
-    const songRatings = ratings[songId];
-    if (!songRatings || !hasAllRatings(songId)) return '-';
+  useEffect(() => {
+    localStorage.setItem('esc_sorted_songs', JSON.stringify(sortedSongs));
+  }, [sortedSongs]);
 
+  // Überprüfen, ob alle Kategorien bewertet wurden und den Durchschnitt berechnen
+  const calculateAverage = (songId) => {
+    const songRatings = ratings[songId];
+
+    // Überprüfen, ob alle Kategorien bewertet wurden
+    if (!songRatings || categories.some((category) => !songRatings[category])) {
+      return '-'; // Rückgabe von '-' wenn nicht alle Kategorien bewertet wurden
+    }
+
+    // Berechnen des Durchschnitts
     const values = categories.map((category) => parseFloat(songRatings[category]) || 0);
     const validValues = values.filter((v) => v > 0);
-
     if (validValues.length === 0) return '-';
-
     const sum = validValues.reduce((acc, curr) => acc + curr, 0);
     return (sum / validValues.length).toFixed(1);
-  }, [ratings, hasAllRatings]);
+  };
 
+  // Sortieren der Songs nach Durchschnittsbewertung, nur wenn alle Kategorien bewertet wurden
   useEffect(() => {
     const sorted = [...songs].sort((a, b) => {
       const avgA = calculateAverage(a.position);
       const avgB = calculateAverage(b.position);
+
+      // Sortieren nur, wenn beide Songs vollständig bewertet wurden
       if (avgA !== '-' && avgB !== '-') {
         return parseFloat(avgB) - parseFloat(avgA);
       }
       return 0;
     });
     setSortedSongs(sorted);
-  }, [ratings, calculateAverage]);
+  }, [ratings]);
 
   const handleRatingChange = (songId, category, value) => {
     setRatings((prev) => ({
@@ -72,13 +81,50 @@ const toggleTheme = () => {
     }));
   };
 
+  const copyToClipboard = useCallback(() => {
+    const tableHeader = `+------------+------|------------------+------------------+------------------+------------------+------------------+-------------------+---------------------------------------------+-------------------------+--------------------------+`;
+    const tableSubHeader = `| Position   | Flag | Artist           | Title            | Outfit           | Bühne            | Ohrwurm          | Song             | Ø Average Rating  | Jessis Tags      | Meine Tags        |`;
+    const tableDivider = `+------------+------|------------------+------------------+------------------+------------------+------------------+-------------------+---------------------------------------------+-------------------------+--------------------------+`;
+
+    const tableRows = sortedSongs.map((song) => {
+      const songId = song.position;
+      const artistRating = ratings[songId]?.Artist || '-';
+      const outfitRating = ratings[songId]?.Outfit || '-';
+      const bühneRating = ratings[songId]?.Bühne || '-';
+      const ohrwurmRating = ratings[songId]?.Ohrwurm || '-';
+      const songRating = ratings[songId]?.Song || '-';
+      const avgRating = calculateAverage(songId);
+      const songTags = song.tags ? song.tags.join(' ') : '';
+      const userTags = ratings[songId]?.tags ? ratings[songId].tags.join(' ') : '';
+      const flag = song.flag || ''; // Flagge des Landes
+
+      return `| ${song.position.toString().padEnd(10)} | ${flag.padEnd(4)} | ${song.artist.padEnd(16)} | ${song.title.padEnd(16)} | ${outfitRating.padEnd(16)} | ${bühneRating.padEnd(16)} | ${ohrwurmRating.padEnd(16)} | ${songRating.padEnd(16)} | ${avgRating.padEnd(17)} | ${songTags.padEnd(20)} | ${userTags.padEnd(20)} |`;
+    });
+
+    const tableContent = [tableHeader, tableSubHeader, tableDivider, ...tableRows, tableDivider].join('\n');
+
+    navigator.clipboard.writeText(tableContent).then(
+      () => {
+        alert('Songs wurden erfolgreich in die Zwischenablage kopiert!');
+      },
+      (err) => {
+        console.error('Fehler beim Kopieren: ', err);
+      }
+    );
+  }, [ratings, sortedSongs]);
+
+  // Funktion zum Leeren des Caches
   const clearCache = () => {
-    const confirmed = window.confirm('Möchtest du wirklich alle Bewertungen und die Sortierung zurücksetzen?');
-    if (confirmed) {
-      localStorage.removeItem('esc_ratings');
-      localStorage.removeItem('esc_sorted_songs');
-      setRatings({});
-      setSortedSongs(songs);
+    const confirmation = window.confirm('Bist du sicher, dass du den Cache leeren möchtest? Alle Bewertungen gehen verloren.');
+    if (confirmation) {
+        // localStorage-Daten löschen
+        localStorage.removeItem('esc_ratings');
+        localStorage.removeItem('esc_sorted_songs');
+        
+        // Zustand zurücksetzen
+        setRatings({});
+        setSortedSongs(songs);  // Setzt die Songs auf den Anfangszustand zurück
+        alert('Cache wurde erfolgreich gelöscht!');
     }
   };
 
@@ -103,12 +149,18 @@ const toggleTheme = () => {
   return (
     <div className="song-list-container">
       <div style={{ marginBottom: '10px' }}>
-        <button onClick={clearCache}>Cache leeren</button>
         <button onClick={toggleTheme}>
-            {theme === 'light' ? '🌙 Dunkles Theme' : '☀️ Helles Theme'}
+          {theme === 'light' ? '🌙 Dunkles Theme' : '☀️ Helles Theme'}
         </button>
-        <button onClick={() => setShowLegend(prev => !prev)} style={{ marginLeft: '10px' }}>
+        <button onClick={() => setShowLegend((prev) => !prev)} style={{ marginLeft: '10px' }}>
           {showLegend ? 'Legende ausblenden' : 'Legende anzeigen'}
+        </button>
+        <button onClick={copyToClipboard} style={{ marginLeft: '10px' }}>
+          Kopiere Song-Liste als ASCII-Tabelle in die Zwischenablage
+        </button>
+        {/* Button zum Leeren des Caches */}
+        <button onClick={clearCache} style={{ marginLeft: '10px', backgroundColor: 'red', color: 'white' }}>
+          Cache leeren
         </button>
       </div>
 
@@ -136,10 +188,14 @@ const toggleTheme = () => {
           return (
             <li key={songId} className="song-item">
               <div className="song-header">
-                <strong>{currentPosition}.</strong> {song.flag} <strong>{song.country}:</strong> {song.artist}  <em>{song.title}</em>
+                <strong>{currentPosition}.</strong> {song.flag} <strong>{song.country}:</strong> {song.artist} <em>{song.title}</em>
+                <span style={{ float: 'right' }}>
+                  Ø <strong>{calculateAverage(songId)}</strong> | Startposition: {song.position}
+                </span>
+              </div>
 
-                {/* ❤️ & 🔥 Buttons */}
-                <div className="song-tag-buttons" style={{ display: 'inline-block', marginLeft: '10px' }}>
+              {/* ❤️ & 🔥 Buttons */}
+              <div className="song-tag-buttons" style={{ display: 'inline-block', marginLeft: '10px' }}>
                   {emojiTags.map((tag) => {
                     const isSelected = ratings[songId]?.tags?.includes(tag);
                     return (
@@ -154,11 +210,6 @@ const toggleTheme = () => {
                     );
                   })}
                 </div>
-
-                <span style={{ float: 'right' }}>
-                  Ø <strong>{calculateAverage(songId)}</strong> | Startposition: {song.position}
-                </span>
-              </div>
 
               {/* Tags anzeigen */}
               {(song.tags?.length > 0 || ratings[songId]?.tags?.length > 0) && (
@@ -193,7 +244,13 @@ const toggleTheme = () => {
                       onChange={(e) => {
                         const val = e.target.value;
                         if (val === '' || (/^\d{1,2}$/.test(val) && +val <= 10 && +val >= 1)) {
-                          handleRatingChange(songId, category, val);
+                          setRatings((prev) => ({
+                            ...prev,
+                            [songId]: {
+                              ...prev[songId],
+                              [category]: val,
+                            },
+                          }));
                         }
                       }}
                     />
