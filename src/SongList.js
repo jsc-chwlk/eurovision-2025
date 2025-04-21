@@ -40,21 +40,18 @@ const SongList = () => {
   }, [sortedSongs]);
 
   // Überprüfen, ob alle Kategorien bewertet wurden und den Durchschnitt berechnen
-  const calculateAverage = (songId) => {
+  const calculateAverage = useCallback((songId) => {
     const songRatings = ratings[songId];
-
-    // Überprüfen, ob alle Kategorien bewertet wurden
     if (!songRatings || categories.some((category) => !songRatings[category])) {
-      return '-'; // Rückgabe von '-' wenn nicht alle Kategorien bewertet wurden
+      return '-';
     }
-
-    // Berechnen des Durchschnitts
     const values = categories.map((category) => parseFloat(songRatings[category]) || 0);
     const validValues = values.filter((v) => v > 0);
     if (validValues.length === 0) return '-';
     const sum = validValues.reduce((acc, curr) => acc + curr, 0);
     return (sum / validValues.length).toFixed(1);
-  };
+  }, [ratings]);
+  
 
   // Sortieren der Songs nach Durchschnittsbewertung, nur wenn alle Kategorien bewertet wurden
   useEffect(() => {
@@ -69,17 +66,7 @@ const SongList = () => {
       return 0;
     });
     setSortedSongs(sorted);
-  }, [ratings]);
-
-  const handleRatingChange = (songId, category, value) => {
-    setRatings((prev) => ({
-      ...prev,
-      [songId]: {
-        ...prev[songId],
-        [category]: value,
-      },
-    }));
-  };
+  }, [ratings, calculateAverage]);
 
   const copyToClipboard = useCallback(() => {
     const tableHeader = `+------------+------|------------------+------------------+------------------+------------------+------------------+-------------------+---------------------------------------------+-------------------------+--------------------------+`;
@@ -98,7 +85,7 @@ const SongList = () => {
       const userTags = ratings[songId]?.tags ? ratings[songId].tags.join(' ') : '';
       const flag = song.flag || ''; // Flagge des Landes
 
-      return `| ${song.position.toString().padEnd(10)} | ${flag.padEnd(4)} | ${song.artist.padEnd(16)} | ${song.title.padEnd(16)} | ${outfitRating.padEnd(16)} | ${bühneRating.padEnd(16)} | ${ohrwurmRating.padEnd(16)} | ${songRating.padEnd(16)} | ${avgRating.padEnd(17)} | ${songTags.padEnd(20)} | ${userTags.padEnd(20)} |`;
+      return `| ${song.position.toString().padEnd(10)} | ${flag.padEnd(4)} | ${song.artist.padEnd(16)} | ${song.title.padEnd(16)} | ${artistRating.padEnd(16)} | ${outfitRating.padEnd(16)} | ${bühneRating.padEnd(16)} | ${ohrwurmRating.padEnd(16)} | ${songRating.padEnd(16)} | ${avgRating.padEnd(17)} | ${songTags.padEnd(20)} | ${userTags.padEnd(20)} |`;
     });
 
     const tableContent = [tableHeader, tableSubHeader, tableDivider, ...tableRows, tableDivider].join('\n');
@@ -111,7 +98,7 @@ const SongList = () => {
         console.error('Fehler beim Kopieren: ', err);
       }
     );
-  }, [ratings, sortedSongs]);
+  }, [ratings, sortedSongs, calculateAverage]);
 
   // Funktion zum Leeren des Caches
   const clearCache = () => {
