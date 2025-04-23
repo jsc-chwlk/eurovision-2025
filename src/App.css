@@ -36,6 +36,15 @@ h1 {
   margin-bottom: 20px; /* Optional, um Platz nach der Überschrift zu schaffen */
 }
 
+.button-bar {
+  display: flex;
+  justify-content: center; /* Zentriert horizontal */
+  align-items: center;
+  flex-wrap: wrap; /* Damit Buttons umbrechen, falls nötig */
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
 .song-list {
   list-style: none;
   padding: 0;
@@ -48,7 +57,7 @@ h1 {
 }
 
 .song-list-container {
-  max-width: 750px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
   background: var(--background-color);
@@ -56,8 +65,31 @@ h1 {
 }
 
 .song-item {
-  padding: 1.5rem 0;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  align-items: center;
+}
+
+.move-buttons button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.move-buttons button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.tag-div{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 .song-item:last-child {
@@ -149,4 +181,62 @@ strong {
 em {
   font-style: italic;
   color: var(--italic-color); 
+}
+
+/* Mobile-Optimierung */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+
+  .song-list-container {
+    padding: 1rem;
+    border-radius: 0;
+  }
+
+  .song-header {
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.95rem;
+  }
+
+  .rating-label {
+    display: block;
+    margin: 0.5rem 0;
+  }
+
+  .button-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .move-buttons {
+    flex-direction: row !important;
+    margin-bottom: 6px;
+    gap: 6px;
+  }
+
+  .tag-div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .ratings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .rating-input {
+    width: 44px;
+    padding: 6px;
+    font-size: 1rem;
+  }
+
+  .emoji-legend {
+    font-size: 0.85rem;
+    padding: 0.75rem;
+  }
 }
