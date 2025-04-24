@@ -42,7 +42,7 @@ const SongList = () => {
     if (!manualSort) {
       sortByAverage();
     }
-  }, [ratings, manualSort]);
+  }, [ratings, manualSort, sortByAverage]);
 
   const [showLegend, setShowLegend] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('esc_theme') || 'light');
@@ -131,7 +131,7 @@ const SongList = () => {
         console.error('Fehler beim Kopieren: ', err);
       }
     );
-  }, [ratings, sortedSongs]);
+  }, [ratings, sortedSongs, calculateAverage]);
 
   // Funktion zum Leeren des Caches
   const clearCache = () => {
