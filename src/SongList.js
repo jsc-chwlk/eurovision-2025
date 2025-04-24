@@ -60,7 +60,7 @@ const SongList = () => {
     if (!manualSort) {
       sortByAverage();
     }
-  }, [ratings]);
+  }, [ratings, manualSort]);
 
   const [showLegend, setShowLegend] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('esc_theme') || 'light');
@@ -118,21 +118,11 @@ const SongList = () => {
       return 0;
     });
     setSortedSongs(sorted);
-  }, [ratings]);
-
-  const handleRatingChange = (songId, category, value) => {
-    setRatings((prev) => ({
-      ...prev,
-      [songId]: {
-        ...prev[songId],
-        [category]: value,
-      },
-    }));
-  };
+  }, [ratings, calculateAverage]);
 
   const copyToClipboard = useCallback(() => {
     const tableHeader = `+------------+------|------------------+------------------+------------------+------------------+------------------+-------------------+---------------------------------------------+-------------------------+--------------------------+`;
-    const tableSubHeader = `| Position   | Flag | Artist           | Title            | Outfit           | Bühne            | Ohrwurm          | Song             | Ø Average Rating  | Jessis Tags      | Meine Tags        |`;
+    const tableSubHeader = `| Position   | Flag | Interpret           | Title            | Artist            | Outfit           | Bühne            | Ohrwurm          | Song             | Ø Average Rating  | Jessis Tags      | Meine Tags        |`;
     const tableDivider = `+------------+------|------------------+------------------+------------------+------------------+------------------+-------------------+---------------------------------------------+-------------------------+--------------------------+`;
 
     const tableRows = sortedSongs.map((song) => {
@@ -147,7 +137,7 @@ const SongList = () => {
       const userTags = ratings[songId]?.tags ? ratings[songId].tags.join(' ') : '';
       const flag = song.flag || ''; // Flagge des Landes
 
-      return `| ${song.position.toString().padEnd(10)} | ${flag.padEnd(4)} | ${song.artist.padEnd(16)} | ${song.title.padEnd(16)} | ${outfitRating.padEnd(16)} | ${bühneRating.padEnd(16)} | ${ohrwurmRating.padEnd(16)} | ${songRating.padEnd(16)} | ${avgRating.padEnd(17)} | ${songTags.padEnd(20)} | ${userTags.padEnd(20)} |`;
+      return `| ${song.position.toString().padEnd(10)} | ${flag.padEnd(4)} | ${song.artist.padEnd(16)} | ${song.title.padEnd(16)} | ${artistRating.padEnd(16)} | ${outfitRating.padEnd(16)} | ${bühneRating.padEnd(16)} | ${ohrwurmRating.padEnd(16)} | ${songRating.padEnd(16)} | ${avgRating.padEnd(17)} | ${songTags.padEnd(20)} | ${userTags.padEnd(20)} |`;
     });
 
     const tableContent = [tableHeader, tableSubHeader, tableDivider, ...tableRows, tableDivider].join('\n');
@@ -223,11 +213,12 @@ const SongList = () => {
           <ul>
             <li>❤️ – Lieblingslied</li>
             <li>🔥 – Gewinnerpotenzial</li>
-            <li>🎉 – Partytauglich</li>
-            <li>💤 – Eher langweilig</li>
-            <li>😢 – Emotional</li>
             <li>🚀 – Oben bei den Wetten</li>
+            <li>🎉 – Partytauglich</li>
+            <li>😢 – Emotional</li>
+            <li>👍 - Okay</li>
             <li>🤷‍♂️ – Neutral</li>
+            <li>💤 – Eher langweilig</li>
             <li>👎 – Nicht mein Fall</li>
           </ul>
         </div>
@@ -236,26 +227,10 @@ const SongList = () => {
       <ul className="song-list">
         {sortedSongs.map((song, index) => {
           const songId = song.position;
-          const currentPosition = index + 1;
 
           return (
             <li key={songId} className="song-item" style={{ display: 'flex', alignItems: 'center' }}>
-  {/* Links: Sortier-Buttons */}
-  <div className="move-buttons" style={{ marginRight: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-    <button
-      onClick={() => moveSong(songId, 'up')}
-      disabled={index === 0}
-      style={{ marginBottom: '4px' }}
-    >
-      🔼
-    </button>
-    <button
-      onClick={() => moveSong(songId, 'down')}
-      disabled={index === sortedSongs.length - 1}
-    >
-      🔽
-    </button>
-  </div>
+  
 
   {/* Rechts: Song-Details */}
   <div style={{ flexGrow: 1 }}>
