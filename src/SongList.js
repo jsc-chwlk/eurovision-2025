@@ -23,24 +23,6 @@ const SongList = () => {
   return storedManualRatings ? JSON.parse(storedManualRatings) : {};
 });
 
-  const moveSong = (position, direction) => {
-    setSortedSongs((prev) => {
-      const index = prev.findIndex((s) => s.position === position);
-      if (index < 0) return prev;
-
-      const newSongs = [...prev];
-      const swapIndex = direction === 'up' ? index - 1 : index + 1;
-
-      if (swapIndex < 0 || swapIndex >= newSongs.length) return prev;
-
-      [newSongs[index], newSongs[swapIndex]] = [newSongs[swapIndex], newSongs[index]];
-
-      return newSongs;
-    });
-
-    setManualSort(true);
-  };
-
   const sortByAverage = () => {
     const sorted = [...songs].sort((a, b) => {
       const avgA = calculateAverage(a.position);
@@ -89,21 +71,20 @@ const SongList = () => {
   }, [manualSort]);
 
   // Überprüfen, ob alle Kategorien bewertet wurden und den Durchschnitt berechnen
-  const calculateAverage = (songId) => {
+  const calculateAverage = useCallback((songId) => {
     const songRatings = ratings[songId];
-
-    // Überprüfen, ob alle Kategorien bewertet wurden
+  
     if (!songRatings || categories.some((category) => !songRatings[category])) {
-      return '-'; // Rückgabe von '-' wenn nicht alle Kategorien bewertet wurden
+      return '-';
     }
-
-    // Berechnen des Durchschnitts
+  
     const values = categories.map((category) => parseFloat(songRatings[category]) || 0);
     const validValues = values.filter((v) => v > 0);
     if (validValues.length === 0) return '-';
     const sum = validValues.reduce((acc, curr) => acc + curr, 0);
     return (sum / validValues.length).toFixed(1);
-  };
+  }, [ratings]);
+  
 
   // Sortieren der Songs nach Durchschnittsbewertung, nur wenn alle Kategorien bewertet wurden
   useEffect(() => {
