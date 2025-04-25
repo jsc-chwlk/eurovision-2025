@@ -23,11 +23,11 @@ const SongList = () => {
   return storedManualRatings ? JSON.parse(storedManualRatings) : {};
 });
 
-  const sortByAverage = () => {
+const sortByAverage = useCallback(() => {
     const sorted = [...songs].sort((a, b) => {
       const avgA = calculateAverage(a.position);
       const avgB = calculateAverage(b.position);
-
+  
       if (avgA !== '-' && avgB !== '-') {
         return parseFloat(avgB) - parseFloat(avgA);
       }
@@ -35,7 +35,7 @@ const SongList = () => {
     });
     setSortedSongs(sorted);
     setManualSort(false);
-  };
+  }, [calculateAverage]);
 
   // Nur ausführen, wenn nicht manuell sortiert wurde
   useEffect(() => {
