@@ -23,24 +23,6 @@ const SongList = () => {
   return storedManualRatings ? JSON.parse(storedManualRatings) : {};
 });
 
-
-
-  // Nur ausführen, wenn nicht manuell sortiert wurde
-  useEffect(() => {
-    if (!manualSort) {
-      sortByAverage();
-    }
-  }, [ratings, manualSort, sortByAverage]);
-
-  const [showLegend, setShowLegend] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem('esc_theme') || 'light');
-
-  useEffect(() => {
-    // Beim Theme-Wechsel das Theme im localStorage speichern
-    document.body.setAttribute('data-theme', theme);
-    localStorage.setItem('esc_theme', theme);
-  }, [theme]);
-
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
@@ -101,6 +83,22 @@ const SongList = () => {
     });
     setSortedSongs(sorted);
   }, [ratings, calculateAverage]);
+
+   // Nur ausführen, wenn nicht manuell sortiert wurde
+   useEffect(() => {
+    if (!manualSort) {
+      sortByAverage();
+    }
+  }, [ratings, manualSort, sortByAverage]);
+
+  const [showLegend, setShowLegend] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem('esc_theme') || 'light');
+
+  useEffect(() => {
+    // Beim Theme-Wechsel das Theme im localStorage speichern
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('esc_theme', theme);
+  }, [theme]);
 
   const copyToClipboard = useCallback(() => {
     const tableHeader = `+------------+------|------------------+------------------+------------------+------------------+------------------+-------------------+---------------------------------------------+-------------------------+--------------------------+`;
