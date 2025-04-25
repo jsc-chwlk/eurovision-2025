@@ -23,19 +23,7 @@ const SongList = () => {
   return storedManualRatings ? JSON.parse(storedManualRatings) : {};
 });
 
-const sortByAverage = useCallback(() => {
-    const sorted = [...songs].sort((a, b) => {
-      const avgA = calculateAverage(a.position);
-      const avgB = calculateAverage(b.position);
-  
-      if (avgA !== '-' && avgB !== '-') {
-        return parseFloat(avgB) - parseFloat(avgA);
-      }
-      return 0;
-    });
-    setSortedSongs(sorted);
-    setManualSort(false);
-  }, [calculateAverage]);
+
 
   // Nur ausführen, wenn nicht manuell sortiert wurde
   useEffect(() => {
@@ -85,6 +73,19 @@ const sortByAverage = useCallback(() => {
     return (sum / validValues.length).toFixed(1);
   }, [ratings]);
   
+  const sortByAverage = useCallback(() => {
+    const sorted = [...songs].sort((a, b) => {
+      const avgA = calculateAverage(a.position);
+      const avgB = calculateAverage(b.position);
+  
+      if (avgA !== '-' && avgB !== '-') {
+        return parseFloat(avgB) - parseFloat(avgA);
+      }
+      return 0;
+    });
+    setSortedSongs(sorted);
+    setManualSort(false);
+  }, [calculateAverage]);
 
   // Sortieren der Songs nach Durchschnittsbewertung, nur wenn alle Kategorien bewertet wurden
   useEffect(() => {
