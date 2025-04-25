@@ -37,6 +37,10 @@ h1 {
 }
 
 .button-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* Damit sie über allem bleibt */
+  background-color: var(--background-color);
   display: flex;
   justify-content: center; /* Zentriert horizontal */
   align-items: center;
@@ -150,6 +154,9 @@ h1 {
 }
 
 .emoji-legend {
+  position: sticky;
+  top: 60px; /* Abstand unter der Button-Bar */
+  z-index: 999;
   background: #1f1f1f;
   border-radius: 8px;
   padding: 1rem;
