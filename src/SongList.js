@@ -115,23 +115,6 @@ const SongList = ({ ratings, setRatings, sortedSongs, setSortedSongs, manualSort
     );
   }, [ratings, sortedSongs, calculateAverage]);
 
-  // Funktion zum Leeren des Caches
-  const clearCache = () => {
-    const confirmation = window.confirm('Bist du sicher, dass du den Cache leeren möchtest? Alle Bewertungen gehen verloren.');
-    if (confirmation) {
-      // localStorage-Daten löschen
-      localStorage.removeItem('esc_ratings');
-      localStorage.removeItem('esc_sorted_songs');
-      localStorage.removeItem('esc_manual_songs')
-
-      // Zustand zurücksetzen
-      setRatings({});
-      setSortedSongs(songs);  // Setzt die Songs auf den Anfangszustand zurück
-      setManualSort({});
-      alert('Cache wurde erfolgreich gelöscht!');
-    }
-  };
-
   const handleTagToggle = (songId, tag) => {
     setRatings((prev) => {
       const prevTags = prev[songId]?.tags || [];
