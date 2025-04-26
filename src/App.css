@@ -20,6 +20,57 @@ body[data-theme='dark'] {
   --italic-color: #d8aaff; /* sanftes Lilac */
 }
 
+/*------*/
+/* App.css */
+
+.app-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  gap: 10px;
+  position: relative;
+}
+
+.app-header-title {
+  margin: 0;
+}
+
+.app-settings-button {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #555;
+}
+
+.app-settings-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: var(--background-color);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  min-width: 160px;
+  z-index: 1001;
+}
+
+.app-settings-dropdown-button {
+  background: none;
+  border: none;
+  color: #d00;
+  font-size: 14px;
+  padding: 6px 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+/********/
+
 body {
   background-color: var(--background-color);
   color: var(--text-color);
@@ -98,7 +149,7 @@ h1 {
 .song-list-container {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   background: var(--background-color);
   border-radius: 12px;
 }

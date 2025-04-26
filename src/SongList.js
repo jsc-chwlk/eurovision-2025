@@ -4,28 +4,20 @@ import songs from './songs';
 const categories = ['Artist', 'Outfit', 'Bühne', 'Ohrwurm', 'Song'];
 const emojiTags = ['❤️', '🔥'];
 
-const SongList = () => {
-  const [ratings, setRatings] = useState(() => {
-    // Laden der Bewertungen aus dem localStorage, wenn vorhanden
-    const storedRatings = localStorage.getItem('esc_ratings');
-    return storedRatings ? JSON.parse(storedRatings) : {};
-  });
+const SongList = ({ ratings, setRatings, sortedSongs, setSortedSongs, manualSort, setManualSort }) => {
 
-  const [sortedSongs, setSortedSongs] = useState(() => {
-    // Laden der sortierten Songs aus dem localStorage, wenn vorhanden
-    const storedSortedSongs = localStorage.getItem('esc_sorted_songs');
-    return storedSortedSongs ? JSON.parse(storedSortedSongs) : songs;
-  });
-
-  const [manualSort, setManualSort] = useState(() => {
-    // Laden der Bewertungen aus dem localStorage, wenn vorhanden
-    const storedManualRatings = localStorage.getItem('esc_manual_ratings');
-    return storedManualRatings ? JSON.parse(storedManualRatings) : {};
-  });
+  const [showLegend, setShowLegend] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem('esc_theme') || 'dark');
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
+
+  useEffect(() => {
+    // Beim Theme-Wechsel das Theme im localStorage speichern
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('esc_theme', theme);
+  }, [theme]);
 
   // Speichern der Bewertungen und der sortierten Songs im localStorage
   useEffect(() => {
@@ -67,7 +59,7 @@ const SongList = () => {
     });
     setSortedSongs(sorted);
     setManualSort(false);
-  }, [calculateAverage]);
+  }, [calculateAverage, setManualSort, setSortedSongs]);
 
   // Sortieren der Songs nach Durchschnittsbewertung, nur wenn alle Kategorien bewertet wurden
   useEffect(() => {
@@ -82,7 +74,7 @@ const SongList = () => {
       return 0;
     });
     setSortedSongs(sorted);
-  }, [ratings, calculateAverage]);
+  }, [ratings, calculateAverage, setSortedSongs]);
 
   // Nur ausführen, wenn nicht manuell sortiert wurde
   useEffect(() => {
@@ -90,15 +82,6 @@ const SongList = () => {
       sortByAverage();
     }
   }, [ratings, manualSort, sortByAverage]);
-
-  const [showLegend, setShowLegend] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem('esc_theme') || 'light');
-
-  useEffect(() => {
-    // Beim Theme-Wechsel das Theme im localStorage speichern
-    document.body.setAttribute('data-theme', theme);
-    localStorage.setItem('esc_theme', theme);
-  }, [theme]);
 
   const copyToClipboard = useCallback(() => {
     const tableHeader = `+------------+------|------------------+------------------+------------------+------------------+------------------+-------------------+---------------------------------------------+-------------------------+--------------------------+`;
@@ -179,9 +162,6 @@ const SongList = () => {
           </button>
           <button onClick={copyToClipboard}>
             Kopiere Song-Liste als ASCII-Tabelle in die Zwischenablage
-          </button>
-          <button onClick={clearCache} style={{ backgroundColor: 'red', color: 'white' }}>
-            Cache leeren
           </button>
         </div>
 
