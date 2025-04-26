@@ -18,10 +18,10 @@ const SongList = () => {
   });
 
   const [manualSort, setManualSort] = useState(() => {
-  // Laden der Bewertungen aus dem localStorage, wenn vorhanden
-  const storedManualRatings = localStorage.getItem('esc_manual_ratings');
-  return storedManualRatings ? JSON.parse(storedManualRatings) : {};
-});
+    // Laden der Bewertungen aus dem localStorage, wenn vorhanden
+    const storedManualRatings = localStorage.getItem('esc_manual_ratings');
+    return storedManualRatings ? JSON.parse(storedManualRatings) : {};
+  });
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
@@ -43,23 +43,23 @@ const SongList = () => {
   // Überprüfen, ob alle Kategorien bewertet wurden und den Durchschnitt berechnen
   const calculateAverage = useCallback((songId) => {
     const songRatings = ratings[songId];
-  
+
     if (!songRatings || categories.some((category) => !songRatings[category])) {
       return '-';
     }
-  
+
     const values = categories.map((category) => parseFloat(songRatings[category]) || 0);
     const validValues = values.filter((v) => v > 0);
     if (validValues.length === 0) return '-';
     const sum = validValues.reduce((acc, curr) => acc + curr, 0);
     return (sum / validValues.length).toFixed(1);
   }, [ratings]);
-  
+
   const sortByAverage = useCallback(() => {
     const sorted = [...songs].sort((a, b) => {
       const avgA = calculateAverage(a.position);
       const avgB = calculateAverage(b.position);
-  
+
       if (avgA !== '-' && avgB !== '-') {
         return parseFloat(avgB) - parseFloat(avgA);
       }
@@ -84,8 +84,8 @@ const SongList = () => {
     setSortedSongs(sorted);
   }, [ratings, calculateAverage]);
 
-   // Nur ausführen, wenn nicht manuell sortiert wurde
-   useEffect(() => {
+  // Nur ausführen, wenn nicht manuell sortiert wurde
+  useEffect(() => {
     if (!manualSort) {
       sortByAverage();
     }
@@ -136,16 +136,16 @@ const SongList = () => {
   const clearCache = () => {
     const confirmation = window.confirm('Bist du sicher, dass du den Cache leeren möchtest? Alle Bewertungen gehen verloren.');
     if (confirmation) {
-        // localStorage-Daten löschen
-        localStorage.removeItem('esc_ratings');
-        localStorage.removeItem('esc_sorted_songs');
-        localStorage.removeItem('esc_manual_songs')
+      // localStorage-Daten löschen
+      localStorage.removeItem('esc_ratings');
+      localStorage.removeItem('esc_sorted_songs');
+      localStorage.removeItem('esc_manual_songs')
 
-        // Zustand zurücksetzen
-        setRatings({});
-        setSortedSongs(songs);  // Setzt die Songs auf den Anfangszustand zurück
-        setManualSort({});
-        alert('Cache wurde erfolgreich gelöscht!');
+      // Zustand zurücksetzen
+      setRatings({});
+      setSortedSongs(songs);  // Setzt die Songs auf den Anfangszustand zurück
+      setManualSort({});
+      alert('Cache wurde erfolgreich gelöscht!');
     }
   };
 
@@ -170,39 +170,41 @@ const SongList = () => {
   return (
     <div className="song-list-container">
       <div className="button-bar">
-    <button onClick={toggleTheme}>
-        {theme === 'light' ? '🌙' : '☀️'}
-    </button>
-    <button onClick={() => setShowLegend((prev) => !prev)}>
-        {showLegend ? 'Legende ausblenden' : 'Legende anzeigen'}
-    </button>
-    <button onClick={copyToClipboard}>
-        Kopiere Song-Liste als ASCII-Tabelle in die Zwischenablage
-    </button>
-    <button onClick={clearCache} style={{ backgroundColor: 'red', color: 'white' }}>
-        Cache leeren
-    </button>
-    <button onClick={sortByAverage}>
-        Nach Durchschnitt sortieren
-    </button>
-</div>
-
-      {showLegend && (
-        <div className="emoji-legend">
-          <h3>Legende</h3>
-          <ul>
-            <li>❤️ – Lieblingslied</li>
-            <li>🔥 – Gewinnerpotenzial</li>
-            <li>🚀 – Oben bei den Wetten</li>
-            <li>🎉 – Partytauglich</li>
-            <li>😢 – Emotional</li>
-            <li>👍 - Okay</li>
-            <li>🤷‍♂️ – Neutral</li>
-            <li>💤 – Eher langweilig</li>
-            <li>👎 – Nicht mein Fall</li>
-          </ul>
+        <div className="buttons">
+          <button onClick={toggleTheme}>
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+          <button onClick={() => setShowLegend((prev) => !prev)}>
+            {showLegend ? 'Legende ausblenden' : 'Legende anzeigen'}
+          </button>
+          <button onClick={copyToClipboard}>
+            Kopiere Song-Liste als ASCII-Tabelle in die Zwischenablage
+          </button>
+          <button onClick={clearCache} style={{ backgroundColor: 'red', color: 'white' }}>
+            Cache leeren
+          </button>
         </div>
-      )}
+
+        {showLegend && (
+          <div className="emoji-legend">
+            <h3>Legende</h3>
+            <ul>
+              <li>❤️ Lieblingslied | </li>
+              <li>🔥 Gewinnerpotenzial | </li>
+              <li>🚀 Oben bei den Wetten | </li>
+              <li>🎉 Partytauglich | </li>
+              <li>😢 Emotional | </li>
+              <li>👍 Okay | </li>
+              <li>🤷‍♂️ Neutral | </li>
+              <li>💤 Eher langweilig | </li>
+              <li>👎 Nicht mein Fall | </li>
+            </ul>
+          </div>
+        )}
+      </div>
+
+
+
 
       <ul className="song-list">
         {sortedSongs.map((song, index) => {
@@ -210,81 +212,81 @@ const SongList = () => {
 
           return (
             <li key={songId} className="song-item" style={{ display: 'flex', alignItems: 'center' }}>
-  
 
-  {/* Rechts: Song-Details */}
-  <div style={{ flexGrow: 1 }}>
-    <div className="song-header">
-      <strong>{index + 1}.</strong> {song.flag} <strong>{song.country}:</strong> {song.artist} <em>{song.title}</em>
-      <span style={{ float: 'right' }}>
-        Ø <strong>{calculateAverage(songId)}</strong> | Startposition: {song.position}
-      </span>
-    </div>
 
-    <div className="tag-div">
-        <div className="song-tag-buttons" style={{ display: 'inline-block', marginLeft: '10px' }}>
-        {emojiTags.map((tag) => {
-            const isSelected = ratings[songId]?.tags?.includes(tag);
-            return (
-            <button
-                key={tag}
-                onClick={() => handleTagToggle(songId, tag)}
-                className={`tag-button ${isSelected ? 'selected' : ''}`}
-                style={{ marginRight: '5px' }}
-            >
-                {tag}
-            </button>
-            );
-        })}
-        </div>
+              {/* Rechts: Song-Details */}
+              <div style={{ flexGrow: 1 }}>
+                <div className="song-header">
+                  <strong>{index + 1}.</strong> {song.flag} <strong>{song.country}:</strong> {song.artist} <em>{song.title}</em>
+                  <span style={{ float: 'right' }}>
+                    Ø <strong>{calculateAverage(songId)}</strong> | Startposition: {song.position}
+                  </span>
+                </div>
 
-        {(song.tags?.length > 0 || ratings[songId]?.tags?.length > 0) && (
-        <div className="tags-display" style={{ marginTop: '4px', marginBottom: '4px' }}>
-            {song.tags?.length > 0 && (
-            <div>
-                🎼 <strong>Jessis Tags:</strong> {song.tags.join(' ')}
-            </div>
-            )}
-            {ratings[songId]?.tags?.length > 0 && (
-            <div>
-                ✍️ <strong>Meine Tags:</strong> {ratings[songId].tags.join(' ')}
-            </div>
-            )}
-        </div>
-        )}
-    </div>
+                <div className="tag-div">
+                  <div className="song-tag-buttons" style={{ display: 'inline-block', marginLeft: '10px' }}>
+                    {emojiTags.map((tag) => {
+                      const isSelected = ratings[songId]?.tags?.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          onClick={() => handleTagToggle(songId, tag)}
+                          className={`tag-button ${isSelected ? 'selected' : ''}`}
+                          style={{ marginRight: '5px' }}
+                        >
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
 
-    <div className="ratings">
-      {categories.map((category) => (
-        <label key={category} className="rating-label">
-          {category}:{' '}
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            min="1"
-            max="10"
-            autoComplete="off"
-            className="rating-input"
-            value={ratings[songId]?.[category] || ''}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (val === '' || (/^\d{1,2}$/.test(val) && +val <= 10 && +val >= 1)) {
-                setRatings((prev) => ({
-                  ...prev,
-                  [songId]: {
-                    ...prev[songId],
-                    [category]: val,
-                  },
-                }));
-              }
-            }}
-          />
-        </label>
-      ))}
-    </div>
-  </div>
-</li>
+                  {(song.tags?.length > 0 || ratings[songId]?.tags?.length > 0) && (
+                    <div className="tags-display" style={{ marginTop: '4px', marginBottom: '4px' }}>
+                      {song.tags?.length > 0 && (
+                        <div>
+                          🎼 <strong>Jessis Tags:</strong> {song.tags.join(' | ')}
+                        </div>
+                      )}
+                      {ratings[songId]?.tags?.length > 0 && (
+                        <div>
+                          ✍️ <strong>Meine Tags:</strong> {ratings[songId].tags.join(' | ')}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="ratings">
+                  {categories.map((category) => (
+                    <label key={category} className="rating-label">
+                      {category}:{' '}
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        min="1"
+                        max="10"
+                        autoComplete="off"
+                        className="rating-input"
+                        value={ratings[songId]?.[category] || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === '' || (/^\d{1,2}$/.test(val) && +val <= 10 && +val >= 1)) {
+                            setRatings((prev) => ({
+                              ...prev,
+                              [songId]: {
+                                ...prev[songId],
+                                [category]: val,
+                              },
+                            }));
+                          }
+                        }}
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </li>
 
           );
         })}

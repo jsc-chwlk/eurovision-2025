@@ -17,7 +17,7 @@ const songs = [
     { position: 16, flag: "🇬🇷", country: "Griechenland", artist: "Klavdia", title: "Asteromata", tags: ["❤️ - 8", "😢"] },
     { position: 17, flag: "🇮🇸", country: "Island", artist: "Væb", title: "Róa", tags: ["👍", "🎉"] },
     { position: 18, flag: "🇮🇪", country: "Irland", artist: "Emmy", title: "Laika Party", tags: ["👍", "🎉"] },
-    { position: 19, flag: "🇮🇱", country: "Israel", artist: "Yuval Raphael", title: "New Day Will Rise", tags: ["🤷‍♂️", "🚀 - 5"] },
+    { position: 19, flag: "🇨🇭", country: "Schweiz", artist: "Zoë Më", title: "Voyage", tags: ["👍"] },
     { position: 20, flag: "🇮🇹", country: "Italien", artist: "Lucio Corsi", title: "Volevo essere un duro", tags: ["👍"] },
     { position: 21, flag: "🇱🇻", country: "Lettland", artist: "Tautumeitas", title: "Bur man laimi", tags: ["👍"] },
     { position: 22, flag: "🇱🇹", country: "Litauen", artist: "Katarsis", title: "Tavo akys", tags: ["👎"] },
@@ -33,7 +33,7 @@ const songs = [
     { position: 32, flag: "🇸🇮", country: "Slowenien", artist: "Klemen", title: "How Much Time Do We Have Left", tags: ["💤", "😢"] },
     { position: 33, flag: "🇪🇸", country: "Spanien", artist: "Melody", title: "Esa diva", tags: ["👎", "🎉"] },
     { position: 34, flag: "🇸🇪", country: "Schweden", artist: "KAJ", title: "Bara bada bastu", tags: ["❤️ - 4", "🔥", "🎉", "🚀 - 1"] },
-    { position: 35, flag: "🇨🇭", country: "Schweiz", artist: "Zoë Më", title: "Voyage", tags: ["👍"] },
+    { position: 35, flag: "🇮🇱", country: "Israel", artist: "Yuval Raphael", title: "New Day Will Rise", tags: ["🤷‍♂️", "🚀 - 5"] },
     { position: 36, flag: "🇺🇦", country: "Ukraine", artist: "Ziferblat", title: "Bird of Pray", tags: ["👍"] },
     { position: 37, flag: "🇬🇧", country: "Vereinigtes Königreich", artist: "Remember Monday", title: "What the Hell Just Happened?", tags: ["👍", "🎉"] }
   ];
