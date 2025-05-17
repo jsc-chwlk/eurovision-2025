@@ -156,11 +156,8 @@ const SongList = ({ ratings, setRatings, sortedSongs, setSortedSongs, manualSort
               <li>🔥 Gewinnerpotenzial | </li>
               <li>🚀 Oben bei den Wetten | </li>
               <li>🎉 Partytauglich | </li>
-              <li>😢 Emotional | </li>
               <li>👍 Okay | </li>
-              <li>🤷‍♂️ Neutral | </li>
-              <li>💤 Eher langweilig | </li>
-              <li>👎 Nicht mein Fall | </li>
+              <li>🤷‍♂️ Neutral </li>
             </ul>
           </div>
         )}
