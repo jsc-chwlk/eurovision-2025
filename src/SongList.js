@@ -88,8 +88,9 @@ const SongList = ({ ratings, setRatings, sortedSongs, setSortedSongs, manualSort
     const tableSubHeader = `| Position   | Flag | Interpret           | Title            | Artist            | Outfit           | Bühne            | Ohrwurm          | Song             | Ø Average Rating  | Jessis Tags      | Meine Tags        |`;
     const tableDivider = `+------------+------|------------------+------------------+------------------+------------------+------------------+-------------------+---------------------------------------------+-------------------------+--------------------------+`;
 
-    const tableRows = sortedSongs.map((song) => {
+    const tableRows = sortedSongs.map((song, index) => {
       const songId = song.position;
+      const platzierung = (index + 1).toString().padEnd(10);
       const artistRating = ratings[songId]?.Artist || '-';
       const outfitRating = ratings[songId]?.Outfit || '-';
       const bühneRating = ratings[songId]?.Bühne || '-';
@@ -100,7 +101,7 @@ const SongList = ({ ratings, setRatings, sortedSongs, setSortedSongs, manualSort
       const userTags = ratings[songId]?.tags ? ratings[songId].tags.join(' ') : '';
       const flag = song.flag || ''; // Flagge des Landes
 
-      return `| ${song.position.toString().padEnd(10)} | ${flag.padEnd(4)} | ${song.artist.padEnd(16)} | ${song.title.padEnd(16)} | ${artistRating.padEnd(16)} | ${outfitRating.padEnd(16)} | ${bühneRating.padEnd(16)} | ${ohrwurmRating.padEnd(16)} | ${songRating.padEnd(16)} | ${avgRating.padEnd(17)} | ${songTags.padEnd(20)} | ${userTags.padEnd(20)} |`;
+      return `| ${platzierung} | ${flag.padEnd(4)} | ${song.artist.padEnd(16)} | ${song.title.padEnd(16)} | ${artistRating.padEnd(16)} | ${outfitRating.padEnd(16)} | ${bühneRating.padEnd(16)} | ${ohrwurmRating.padEnd(16)} | ${songRating.padEnd(16)} | ${avgRating.padEnd(17)} | ${songTags.padEnd(20)} | ${userTags.padEnd(20)} |`;
     });
 
     const tableContent = [tableHeader, tableSubHeader, tableDivider, ...tableRows, tableDivider].join('\n');
